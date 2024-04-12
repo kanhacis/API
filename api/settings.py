@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +33,7 @@ AUTH_USER_MODEL = "account.User"
 
 # Application definition
 INSTALLED_APPS = [
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -47,6 +49,8 @@ INSTALLED_APPS = [
     "mystore",
     "cart",
     "order",
+
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -94,6 +98,19 @@ DATABASES = {
     }
 }
 
+# DATABASES = {  
+#     'default': {  
+#         'ENGINE': 'django.db.backends.mysql',  
+#         'NAME': 'DjangoDB',  
+#         'USER': 'root',  
+#         'PASSWORD': '',  
+#         'HOST': '127.0.0.1',  
+#         'PORT': '3306',  
+#         'OPTIONS': {  
+#             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'" 
+#         }  
+#     }  
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -131,6 +148,13 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATICFILES_DIR = {
+    os.path.join(BASE_DIR, "public/static")
+}
+MEDIA_ROOT = os.path.join(BASE_DIR, "public/static")
+MEDIA_URL = "/media/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -145,10 +169,14 @@ REST_FRAMEWORK = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=50),
+     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
      'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
      'ROTATE_REFRESH_TOKENS': True,
      'BLACKLIST_AFTER_ROTATION': True
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+JAZZMIN_SETTINGS = {
+    "site_brand": "booKStore",
+
+    "welcome_sign": "Welcome to the booKStore", 
+} 
