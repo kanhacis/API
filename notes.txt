@@ -1,0 +1,38 @@
+## How to perform add to cart
+http://127.0.0.1:8000/cart/mycart/ 
+{
+  "user":29,
+  "store":6
+} 
+
+
+http://127.0.0.1:8000/cart/mycartitem/ 
+{
+    "cart": 6,
+    "item": 21,
+    "quantity": 1
+} 
+
+
+## How to perform order 
+http://127.0.0.1:8000/order/myorder/ 
+{
+  "user": 29,
+  "store": 6
+}
+
+http://127.0.0.1:8000/order/myorderitem/ 
+{
+    "order": we will get from the myorder response,
+    "item": 21,
+    "quantity": 1
+}
+
+http://127.0.0.1:8000/cart/mycart/ 
+{
+  "user":29,
+  "store":6
+} # delete this cart 
+  
+
+  

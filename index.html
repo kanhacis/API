@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit necessitatibus pariatur doloribus aperiam vero, eveniet
+        rerum, sequi unde officia accusamus dicta? Culpa <span style="cursor: pointer; color: gray;"
+            class="show">more...</span><span class="data">Facilis cumque quia corporis
+            ipsum
+            laudantium
+            necessitatibus pariatur doloribus aperiam vero, eveniet rerum, sequi unde officia accusamus dicta? Culpa,
+            facere
+            amet. Molestiae quasi dolorum laudantium nihil inventore voluptatem cupiditate iste eum magni, illum ab,
+            odit
+            illo laboriosam aliquam quos numquam hic magnam! <span style="color: gray; cursor: pointer;" class="hide">...less</span></span>
+    </p>
+</body>
+<script>
+    document.getElementsByClassName("data")[0].style.display = "none"
+
+    document.getElementsByClassName("show")[0].addEventListener("click", function () {
+        document.getElementsByClassName("data")[0].style.display = "inline";
+        document.getElementsByClassName("show")[0].style.display = "none";
+    })
+
+    document.getElementsByClassName("hide")[0].addEventListener("click", function () {
+        document.getElementsByClassName("data")[0].style.display = "none";
+        document.getElementsByClassName("show")[0].style.display = "inline";
+    })
+</script>
+</html>
