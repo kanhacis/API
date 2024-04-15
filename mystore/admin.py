@@ -40,6 +40,17 @@ class StoreItemAdmin(admin.ModelAdmin):
     list_filter = ["name", "type", "standard", "price"]
     list_per_page = 5
 
+    def save_model(self, request, obj, form, change):
+        if obj.topay is not None and obj.topay < 0:
+            self.message_user(request, "Topay amount is negative. Item will not be saved.", level=admin.WARNING)
+            return
+        elif obj.topay is not None and obj.topay > 0:
+            if obj.store.recharge - obj.topay < 0:
+                self.message_user(request, "Recharge your store. Item will not be saved.", level=admin.WARNING)
+                return
+
+        super().save_model(request, obj, form, change)
+
     ## Function to filter out logIn user store items
     def get_queryset(self, request):
         if request.user.is_staff and not request.user.is_superuser:
@@ -64,6 +75,7 @@ class StoreItemAdmin(admin.ModelAdmin):
             form.base_fields['store'].widget.can_change_related = False
         return form 
 
+        
 
 ## Register ReviewItem 
 @admin.register(ReviewItem) 

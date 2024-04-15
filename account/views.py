@@ -76,11 +76,14 @@ class Contact(viewsets.ModelViewSet):
 
 ## Address api class
 class Address(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     serializer_class = AddressSerializer 
 
     def get_queryset(self):
-        return Addres.objects.filter(user=self.request.user)
+        try:
+            return Addres.objects.filter(user=self.request.user)
+        except:
+            return Addres.objects.all()
     
 
 ## Logout function for admin

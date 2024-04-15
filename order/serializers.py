@@ -2,13 +2,6 @@ from rest_framework import serializers
 from .models import Order, OrderItem
 
 
-## Serialize Order model
-class OrderSerialize(serializers.ModelSerializer):
-    class Meta:
-        model = Order 
-        fields = ["id", "user", "store"]
-
-
 ## Serialize OrderItem model
 class OrderItemSerialize(serializers.ModelSerializer): 
     class Meta: 
@@ -16,3 +9,9 @@ class OrderItemSerialize(serializers.ModelSerializer):
         fields = ["id", "order", "item", "quantity"] 
 
         
+## Serialize Order model
+class OrderSerialize(serializers.ModelSerializer):
+    orderItem = OrderItemSerialize(many=True, read_only=True)
+    class Meta:
+        model = Order 
+        fields = ["id", "user", "store", "orderItem"]

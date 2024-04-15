@@ -3,6 +3,7 @@ from account.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.shortcuts import HttpResponse
 
 
 ## My store model
@@ -39,22 +40,29 @@ class StoreItem(models.Model):
     itemDesc = models.TextField(blank=True, null=True) 
     topay = models.PositiveIntegerField(blank=True, null=True) 
     
-    def save(self, *args, **kwargs): 
-        if self.price is not None: 
-            self.topay = int(self.price * 0.05) 
-        else: 
-            self.topay = None 
 
-        my_store_id = Mystore.objects.get(id=self.store.id) 
-        
-        if(my_store_id.recharge - self.topay >= 0):
-            my_store_id.recharge = my_store_id.recharge - self.topay 
-            my_store_id.save()
+    def save(self, *args, **kwargs):
+        if self.price is not None:
+            self.topay = int(self.price * 0.05)
         else:
-            print("Recharge your store")
+            self.topay = None
 
-        super().save(*args, **kwargs) 
+        if self.topay >= 0:  
+            my_store = Mystore.objects.get(id=self.store.id)
+            
+            if my_store.recharge - self.topay >= 0:
+                my_store.recharge -= self.topay
+                my_store.save()
+            else:
+                print("Recharge your store")
+                return HttpResponse("Recharge your store")
+        else:
+            print("Topay amount is negative. Item will not be saved.")
+            return  
 
+        super().save(*args, **kwargs)
+
+    
     def __str__(self): 
         return self.name 
 

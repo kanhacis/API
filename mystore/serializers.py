@@ -50,6 +50,7 @@ class MystoreSerialize(serializers.ModelSerializer):
     # storeItem = serializers.StringRelatedField(many=True, read_only=True)
     # storeItem = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     # storeItem = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="storeitem-detail") # storeitem -> is a url of (Item view) (StoreItem model)
+    
     average_rating = serializers.SerializerMethodField()  # Add this field to calculate average rating
     
     class Meta:
