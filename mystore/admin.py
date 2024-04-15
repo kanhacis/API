@@ -1,7 +1,10 @@
 from django.contrib import admin
+from django.http import HttpRequest
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from django.utils.safestring import mark_safe
 from .models import ItemImage
+from django.contrib import messages
+# from jazzmin.mixins import ChangeFormViewMixin
 
 
 ## Register Mystore model 
@@ -38,19 +41,39 @@ class MystoreAdmin(admin.ModelAdmin):
 class StoreItemAdmin(admin.ModelAdmin):
     list_display = ["id", "store", "name", "type", "standard", "price"]
     list_filter = ["name", "type", "standard", "price"]
-    list_per_page = 5
+    list_per_page = 5 
 
+    ## Disable django default alert messages
+    def message_user(self, request, message, level: int | str = ..., extra_tags: str = ..., fail_silently: bool = ...) -> None:
+        return super().message_user(request, message, level, extra_tags, fail_silently)
+
+    ## Write logic to deduct the store recharge while creating items
     def save_model(self, request, obj, form, change):
-        if obj.topay is not None and obj.topay < 0:
-            self.message_user(request, "Topay amount is negative. Item will not be saved.", level=admin.WARNING)
-            return
-        elif obj.topay is not None and obj.topay > 0:
-            if obj.store.recharge - obj.topay < 0:
-                self.message_user(request, "Recharge your store. Item will not be saved.", level=admin.WARNING)
-                return
+        if obj.price is not None:
+            obj.topay = int(obj.price * 0.05) 
+        else: 
+            obj.topay = None 
 
+        if obj.topay is not None and obj.topay >= 0:
+            my_store = Mystore.objects.get(id=obj.store.id)
+
+            if my_store.recharge - obj.topay >= 0:
+                my_store.recharge -= obj.topay
+                my_store.save()
+                messages.add_message(request, messages.SUCCESS, "Item added successfully!")
+            else:
+                # Add a message and redirect to the change form
+                messages.add_message(request, messages.ERROR, "Recharge your store!")
+                return
+        else:
+            # Add a message and redirect to the change form
+            messages.error(request, "Topay amount is negative. Item will not be saved.")
+            return
+
+        ## call to the parent class save_model method
         super().save_model(request, obj, form, change)
 
+        
     ## Function to filter out logIn user store items
     def get_queryset(self, request):
         if request.user.is_staff and not request.user.is_superuser:

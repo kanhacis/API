@@ -1,4 +1,3 @@
-from typing import Collection
 from django.db import models
 from mystore.models import Mystore, StoreItem
 from account.models import User
@@ -13,8 +12,8 @@ class Cart(models.Model):
     class Meta:  
         unique_together = ("user", "store") 
         
-    def __str__(self):
-        return f"Cart for {self.user.username} at {self.store.name}"
+    def __str__(self):  
+        return f"Cart for {self.user.username} at {self.store.name}"  
 
 ## Cart Item model
 class CartItem(models.Model):

@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.db import models
 from account.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -40,31 +41,8 @@ class StoreItem(models.Model):
     itemDesc = models.TextField(blank=True, null=True) 
     topay = models.PositiveIntegerField(blank=True, null=True) 
     
-
-    def save(self, *args, **kwargs):
-        if self.price is not None:
-            self.topay = int(self.price * 0.05)
-        else:
-            self.topay = None
-
-        if self.topay >= 0:  
-            my_store = Mystore.objects.get(id=self.store.id)
-            
-            if my_store.recharge - self.topay >= 0:
-                my_store.recharge -= self.topay
-                my_store.save()
-            else:
-                print("Recharge your store")
-                return HttpResponse("Recharge your store")
-        else:
-            print("Topay amount is negative. Item will not be saved.")
-            return  
-
-        super().save(*args, **kwargs)
-
-    
     def __str__(self): 
-        return self.name 
+        return self.name
 
 
 ## Store item images 
