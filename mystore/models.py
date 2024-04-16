@@ -5,11 +5,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import HttpResponse
+from django.utils import timezone
 
 
 ## My store model
 class Mystore(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_store")
     name = models.CharField(max_length=255)
     contact = models.CharField(max_length=15)
     city = models.CharField(max_length=255, blank=True, null=True)
@@ -19,6 +20,8 @@ class Mystore(models.Model):
     verification = models.BooleanField(default=False, blank=True, null=True)
     image = models.ImageField(upload_to="storeImages/")
     recharge = models.PositiveIntegerField(blank=True, null=True)
+    url = models.ImageField(upload_to="storeImages/", blank=True, null=True)
+    
 
     def __str__(self):
         return self.name
@@ -26,10 +29,10 @@ class Mystore(models.Model):
 
 ## Store item model 
 ITEM_TYPES = ( 
-    ("School Book", "School Book"), 
+    ("School Book", "School Book"),     
     ("Syllabus Book", "Syllabus Book"), 
-    ("College Book", "College Book"), 
-    ("Notes", "Notes"), 
+    ("College Book", "College Book"),   
+    ("Notes", "Notes"),  
     ("Other", "Other"), 
 ) 
 class StoreItem(models.Model): 
@@ -40,6 +43,8 @@ class StoreItem(models.Model):
     price = models.IntegerField(validators=[MinValueValidator(1)], blank=True, null=True) 
     itemDesc = models.TextField(blank=True, null=True) 
     topay = models.PositiveIntegerField(blank=True, null=True) 
+    start_date = models.DateField(auto_now_add=True, blank=True, null=True) 
+    end_date = models.DateField(blank=True, null=True) 
     
     def __str__(self): 
         return self.name

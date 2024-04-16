@@ -4,20 +4,34 @@ from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from django.utils.safestring import mark_safe
 from .models import ItemImage
 from django.contrib import messages
-# from jazzmin.mixins import ChangeFormViewMixin
+from datetime import datetime, timedelta
 
 
 ## Register Mystore model 
 @admin.register(Mystore) 
 class MystoreAdmin(admin.ModelAdmin): 
-    list_display = ["id", "user", "name", "contact", "date", "verification"] 
-    readonly_fields = ["verification"] 
+    list_display = ["id", "user", "name", "contact", "date", "recharge", "verification"] 
+    readonly_fields = ["verification", "recharge", "url_image"] 
+    exclude = ["url"]
 
-    ## Function to freeze verification field to is_staff user 
-    def get_readonly_fields(self, request, obj=None): 
-        if request.user.is_staff and not request.user.is_superuser: 
-            return ["verification"] 
-        return [] 
+
+    class Media:
+        js = [
+            "refresh_admin.js"
+        ]
+
+    ## Function to display url image 
+    def url_image(self, obj): 
+        return mark_safe('<img src="{url}" width="{width}" height="{height}" />'.format( 
+            url=obj.url.url, 
+            width=100, 
+            height=100, 
+        )) 
+    
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser: 
+            return [] 
+        return self.readonly_fields 
 
     ## Function to filter out logIn user store 
     def get_queryset(self, request): 
@@ -25,13 +39,13 @@ class MystoreAdmin(admin.ModelAdmin):
             return Mystore.objects.filter(user=request.user) 
         else: 
             return super().get_queryset(request) 
-        
-    ## Function to display logIn user in user field
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if request.user.is_staff and not request.user.is_superuser:
-            if db_field.name == "user":
-                kwargs["initial"] = request.user.id
-                kwargs["disabled"] = True  
+     
+    ## Function to display logIn user in user field 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs): 
+        if request.user.is_staff and not request.user.is_superuser: 
+            if db_field.name == "user": 
+                kwargs["initial"] = request.user.id 
+                kwargs["disabled"] = True 
                 return super().formfield_for_foreignkey(db_field, request, **kwargs) 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
@@ -41,7 +55,8 @@ class MystoreAdmin(admin.ModelAdmin):
 class StoreItemAdmin(admin.ModelAdmin):
     list_display = ["id", "store", "name", "type", "standard", "price"]
     list_filter = ["name", "type", "standard", "price"]
-    list_per_page = 5 
+    readonly_fields = []
+    list_per_page = 5
 
     ## Disable django default alert messages
     def message_user(self, request, message, level: int | str = ..., extra_tags: str = ..., fail_silently: bool = ...) -> None:
@@ -49,6 +64,12 @@ class StoreItemAdmin(admin.ModelAdmin):
 
     ## Write logic to deduct the store recharge while creating items
     def save_model(self, request, obj, form, change):
+        # Insert current date in start_date and calculate the end_date 30 days ahead of start_date 
+        if not obj.start_date:
+            obj.start_date = datetime.now().date()
+            obj.end_date = obj.start_date + timedelta(days=30)
+
+        # Calculate topay amount and insert in into topay field
         if obj.price is not None:
             obj.topay = int(obj.price * 0.05) 
         else: 
@@ -61,19 +82,46 @@ class StoreItemAdmin(admin.ModelAdmin):
                 my_store.recharge -= obj.topay
                 my_store.save()
                 messages.add_message(request, messages.SUCCESS, "Item added successfully!")
+                self.readonly_fields.append(obj.standard)
             else:
                 # Add a message and redirect to the change form
                 messages.add_message(request, messages.ERROR, "Recharge your store!")
-                return
+                return 
         else:
             # Add a message and redirect to the change form
             messages.error(request, "Topay amount is negative. Item will not be saved.")
-            return
+            return 
 
         ## call to the parent class save_model method
         super().save_model(request, obj, form, change)
+     
 
-        
+    def get_readonly_fields(self, request, obj=None):
+        try:  
+            if StoreItem.objects.filter(id=obj.pk).exists():
+                if request.user.is_staff and not request.user.is_superuser:
+                    if int(str(obj.end_date - obj.start_date).split(" ")[0]) > 1:
+                        return ("name", "type", "itemDesc", "topay", "standard", "price", "start_date", "end_date")
+                    else:
+                        return ()
+                else:
+                    return () 
+        except:
+            return ()
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if object_id:
+            if request.user.is_staff and not request.user.is_superuser:
+                extra_context = extra_context or {}
+                extra_context['show_save'] = False
+                extra_context['show_save_and_continue'] = False
+                extra_context['show_save_and_add_another'] = False
+                return super().changeform_view(request, object_id, form_url, extra_context)
+            else:
+                return super().changeform_view(request, object_id, form_url, extra_context)
+        else:
+            return super().changeform_view(request, object_id, form_url, extra_context)
+
     ## Function to filter out logIn user store items
     def get_queryset(self, request):
         if request.user.is_staff and not request.user.is_superuser:
@@ -87,8 +135,8 @@ class StoreItemAdmin(admin.ModelAdmin):
         if request.user.is_staff and not request.user.is_superuser:
             if db_field.name == "store":
                 my_store = Mystore.objects.get(user=request.user)
-                kwargs["queryset"] = Mystore.objects.filter(pk=my_store.pk)
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+                kwargs["queryset"] = Mystore.objects.filter(pk=my_store.pk) 
+        return super().formfield_for_foreignkey(db_field, request, **kwargs) 
     
     ## Function to disabled edit & add button
     def get_form(self, request, obj=None, **kwargs):

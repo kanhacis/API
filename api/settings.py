@@ -136,11 +136,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+# TIME_ZONE = "UTC"
+# USE_I18N = True
+# USE_TZ = True
 
+## Set IST timezone
+TIME_ZONE =  'Asia/Kolkata'
 USE_I18N = True
-
-USE_TZ = True
+USE_L10N = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -150,6 +154,7 @@ STATIC_URL = "static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIR = {
+    os.path.join(BASE_DIR, 'mystore/static/'),
     os.path.join(BASE_DIR, "public/static")
 }
 MEDIA_ROOT = os.path.join(BASE_DIR, "public/static")
@@ -177,6 +182,5 @@ SIMPLE_JWT = {
 
 JAZZMIN_SETTINGS = {
     "site_brand": "booKStore",
-
     "welcome_sign": "Welcome to the booKStore", 
 } 
