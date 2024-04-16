@@ -53,7 +53,7 @@ class MystoreAdmin(admin.ModelAdmin):
 ## Register StoreItem
 @admin.register(StoreItem)
 class StoreItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "store", "name", "type", "standard", "price"]
+    list_display = ["id", "store", "name", "type", "standard", "price", "end_date"]
     list_filter = ["name", "type", "standard", "price"]
     readonly_fields = []
     list_per_page = 5
@@ -67,7 +67,7 @@ class StoreItemAdmin(admin.ModelAdmin):
         # Insert current date in start_date and calculate the end_date 30 days ahead of start_date 
         if not obj.start_date:
             obj.start_date = datetime.now().date()
-            obj.end_date = obj.start_date + timedelta(days=30)
+            obj.end_date = obj.start_date + timedelta(days=2)
 
         # Calculate topay amount and insert in into topay field
         if obj.price is not None:
@@ -82,33 +82,35 @@ class StoreItemAdmin(admin.ModelAdmin):
                 my_store.recharge -= obj.topay
                 my_store.save()
                 messages.add_message(request, messages.SUCCESS, "Item added successfully!")
-                self.readonly_fields.append(obj.standard)
+                # self.readonly_fields.append(obj.standard)
             else:
                 # Add a message and redirect to the change form
                 messages.add_message(request, messages.ERROR, "Recharge your store!")
                 return 
         else:
             # Add a message and redirect to the change form
-            messages.error(request, "Topay amount is negative. Item will not be saved.")
+            messages.add_message(request, "Topay amount is negative. Item will not be saved.")
             return 
 
-        ## call to the parent class save_model method
+        # call to the parent class save_model method
         super().save_model(request, obj, form, change)
-     
-
+    
+    ## Function to freeze the field based on user type
     def get_readonly_fields(self, request, obj=None):
         try:  
-            if StoreItem.objects.filter(id=obj.pk).exists():
-                if request.user.is_staff and not request.user.is_superuser:
-                    if int(str(obj.end_date - obj.start_date).split(" ")[0]) > 1:
-                        return ("name", "type", "itemDesc", "topay", "standard", "price", "start_date", "end_date")
-                    else:
-                        return ()
+            if StoreItem.objects.filter(id=obj.pk).exists(): 
+                if request.user.is_staff and not request.user.is_superuser: 
+                    if int(str(obj.end_date - obj.start_date).split(" ")[0]) > 1: 
+                        return ("name", "type", "itemDesc", "topay", "standard", "price", "start_date", "end_date", "open_to_sell") 
+                    else: 
+                        obj.open_to_sell = False 
+                        return () 
                 else:
                     return () 
         except:
-            return ()
+            return () 
 
+    ## Function to disable the default django buttons based on user type
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         if object_id:
             if request.user.is_staff and not request.user.is_superuser:

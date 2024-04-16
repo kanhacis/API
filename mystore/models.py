@@ -43,6 +43,7 @@ class StoreItem(models.Model):
     price = models.IntegerField(validators=[MinValueValidator(1)], blank=True, null=True) 
     itemDesc = models.TextField(blank=True, null=True) 
     topay = models.PositiveIntegerField(blank=True, null=True) 
+    open_to_sell = models.BooleanField(default=True, blank=True, null=True)
     start_date = models.DateField(auto_now_add=True, blank=True, null=True) 
     end_date = models.DateField(blank=True, null=True) 
     
