@@ -1,7 +1,6 @@
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from rest_framework import serializers
 from django.db.models import Avg
-import math
 
 
 ## Serialize ReviewItem

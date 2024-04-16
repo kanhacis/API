@@ -14,26 +14,18 @@
 #         Addres.objects.create(user=user_instance)
 
 
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from .models import User, Contact, Addres
 from .serializers import UserSerializer, ContactSerializer, AddressSerializer
 from rest_framework import viewsets
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate, login, logout
-from django.http import JsonResponse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from account.models import User
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from account.serializers import UserSerializer
 from rest_framework import viewsets
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
-from django.contrib.auth import logout
 
 
 ## Register api class
@@ -45,7 +37,7 @@ class Register(viewsets.ModelViewSet):
         user_instance = serializer.save()
         Addres.objects.create(user=user_instance)
 
-
+    
 ## Login api class
 class Loginview(APIView):
     def post(self, request):

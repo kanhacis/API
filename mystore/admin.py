@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.http import HttpRequest
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from django.utils.safestring import mark_safe
 from .models import ItemImage
@@ -13,7 +12,6 @@ class MystoreAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "name", "contact", "date", "recharge", "verification"] 
     readonly_fields = ["verification", "recharge", "url_image"] 
     exclude = ["url"]
-
 
     class Media:
         js = [
@@ -39,7 +37,7 @@ class MystoreAdmin(admin.ModelAdmin):
             return Mystore.objects.filter(user=request.user) 
         else: 
             return super().get_queryset(request) 
-     
+
     ## Function to display logIn user in user field 
     def formfield_for_foreignkey(self, db_field, request, **kwargs): 
         if request.user.is_staff and not request.user.is_superuser: 
