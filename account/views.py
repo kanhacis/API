@@ -9,7 +9,7 @@
 #         # Add user to 'staff' group
 #         # group = Group.objects.get(name="staff")
 #         # user_instance.groups.add(group)
-         
+          
 #         # Create an address for the new user 
 #         Addres.objects.create(user=user_instance)
 
@@ -22,7 +22,7 @@ from django.contrib.auth import logout
 from account.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from account.serializers import UserSerializer
+from account.serializers import UserSerializer 
 from rest_framework import viewsets
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
@@ -48,7 +48,7 @@ class Loginview(APIView):
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             raise AuthenticationFailed("Account does not exist")
-
+        
         if not user.check_password(password):
             raise AuthenticationFailed("Incorrect Password")
         

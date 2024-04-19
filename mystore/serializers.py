@@ -9,7 +9,6 @@ class ReviewItemSerialize(serializers.ModelSerializer):
     
     class Meta:
         model = ReviewItem
-        # fields = ["id", "user", "item", "rating", "description", "created_at"] # exluding user and adding username
         fields = ["id", "username", "item", "rating", "description"]
 
 
@@ -22,20 +21,16 @@ class ItemImageSerialize(serializers.ModelSerializer):
 
 ## Serialize StoreItem model
 class StoreItemSerialize(serializers.ModelSerializer):
-    store_review = serializers.SerializerMethodField()
     item_images = ItemImageSerialize(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
     user_count = serializers.SerializerMethodField()
+    item_review = ReviewItemSerialize(many=True, read_only=True)
     
     class Meta:
         model = StoreItem
-        fields = ["id", "store", "name", "type", "standard", "price", "itemDesc", "store_review", "item_images", "average_rating", "user_count"]
+        fields = ["id", "store", "name", "type", "standard", "price", "itemDesc", "item_review", "item_images", "average_rating", "user_count"]
     
-    def get_store_review(self, obj):
-        reviews = ReviewItem.objects.filter(item=obj)
-        return ReviewItemSerialize(reviews, many=True).data  
-    
-    def get_average_rating(self, obj):
+    def get_average_rating(self, obj): 
         average_rating = ReviewItem.objects.filter(item=obj).aggregate(Avg('rating'))['rating__avg']
         return round(average_rating) if average_rating is not None else 0
     
@@ -52,10 +47,10 @@ class MystoreSerialize(serializers.ModelSerializer):
     
     average_rating = serializers.SerializerMethodField()  # Add this field to calculate average rating
     
-    class Meta:
+    class Meta: 
         model = Mystore
         fields = ["id", "user", "name", "contact", "city", "date", "status", "location", "verification", "image", "average_rating"]
-
+    
     def get_average_rating(self, obj):
         # Calculate average rating for all store items
         total_ratings = 0 
@@ -68,4 +63,6 @@ class MystoreSerialize(serializers.ModelSerializer):
         if total_items > 0: 
             return round(total_ratings / total_items) 
         else: 
-            return 0 # Return 0 if there are no items or ratings
+            return 0 # Return 0 if there are no items or ratings 
+        
+ 

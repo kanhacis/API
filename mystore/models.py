@@ -17,9 +17,8 @@ class Mystore(models.Model):
     recharge = models.PositiveIntegerField(blank=True, null=True)
     url = models.ImageField(upload_to="storeImages/", blank=True, null=True)
     
-
-    def __str__(self):
-        return self.name
+    def __str__(self): 
+        return self.name 
 
 
 ## Store item model 
@@ -27,7 +26,7 @@ ITEM_TYPES = (
     ("School Book", "School Book"),     
     ("Syllabus Book", "Syllabus Book"), 
     ("College Book", "College Book"),   
-    ("Notes", "Notes"),  
+    ("Notes", "Notes"), 
     ("Other", "Other"), 
 ) 
 class StoreItem(models.Model): 
@@ -58,7 +57,7 @@ class ItemImage(models.Model):
 ## Review model 
 class ReviewItem(models.Model): 
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True) 
-    item = models.ForeignKey(StoreItem, on_delete=models.CASCADE) 
+    item = models.ForeignKey(StoreItem, on_delete=models.CASCADE, related_name="item_review") 
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)]) 
     description = models.TextField() 
     created_at = models.DateField(auto_now_add=True) 

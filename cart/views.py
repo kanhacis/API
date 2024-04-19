@@ -40,7 +40,7 @@ class MyCartItem(viewsets.ModelViewSet):
         cart_id = request.data.get("cart")  
         item_id = request.data.get("item") 
         quantity = request.data.get("quantity") 
-        
+    
         try: 
             existing_item = CartItem.objects.get(cart=cart_id, item=item_id)   
             existing_item.quantity = quantity 

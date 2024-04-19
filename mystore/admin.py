@@ -1,4 +1,6 @@
+from collections.abc import Sequence
 from django.contrib import admin
+from django.http import HttpRequest
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from django.utils.safestring import mark_safe
 from .models import ItemImage
@@ -30,7 +32,13 @@ class MystoreAdmin(admin.ModelAdmin):
         if request.user.is_superuser: 
             return [] 
         return self.readonly_fields 
-
+    
+    def get_list_filter(self, request):
+        if request.user.is_superuser:
+            return ["user", "name", "date", "verification"]
+        else:
+            return []
+    
     ## Function to filter out logIn user store 
     def get_queryset(self, request): 
         if request.user.is_staff and not request.user.is_superuser: 
@@ -45,20 +53,25 @@ class MystoreAdmin(admin.ModelAdmin):
                 kwargs["initial"] = request.user.id 
                 kwargs["disabled"] = True 
                 return super().formfield_for_foreignkey(db_field, request, **kwargs) 
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 ## Register StoreItem
 @admin.register(StoreItem)
 class StoreItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "store", "name", "type", "standard", "price", "end_date"]
-    list_filter = ["name", "type", "standard", "price"]
+    list_display = ["id", "store", "name", "type", "price", "open_to_sell", "end_date"]
     readonly_fields = []
     list_per_page = 5
 
     ## Disable django default alert messages
     def message_user(self, request, message, level: int | str = ..., extra_tags: str = ..., fail_silently: bool = ...) -> None:
         return super().message_user(request, message, level, extra_tags, fail_silently)
+    
+    def get_list_filter(self, request):
+        if request.user.is_superuser:
+            return ["store", "name", "type", "standard", "end_date"]
+        else:
+            return ["name", "type", "standard", "end_date"]
 
     ## Write logic to deduct the store recharge while creating items
     def save_model(self, request, obj, form, change):
@@ -74,13 +87,12 @@ class StoreItemAdmin(admin.ModelAdmin):
             obj.topay = None 
 
         if obj.topay is not None and obj.topay >= 0:
-            my_store = Mystore.objects.get(id=obj.store.id)
-
-            if my_store.recharge - obj.topay >= 0:
-                my_store.recharge -= obj.topay
-                my_store.save()
+            my_store = Mystore.objects.get(id=obj.store.id) 
+            
+            if my_store.recharge - obj.topay >= 0: 
+                my_store.recharge -= obj.topay 
+                my_store.save() 
                 messages.add_message(request, messages.SUCCESS, "Item added successfully!")
-                # self.readonly_fields.append(obj.standard)
             else:
                 # Add a message and redirect to the change form
                 messages.add_message(request, messages.ERROR, "Recharge your store!")
@@ -95,14 +107,16 @@ class StoreItemAdmin(admin.ModelAdmin):
     
     ## Function to freeze the field based on user type
     def get_readonly_fields(self, request, obj=None):
+        curr_date = datetime.now().date()
         try:  
             if StoreItem.objects.filter(id=obj.pk).exists(): 
                 if request.user.is_staff and not request.user.is_superuser: 
-                    if int(str(obj.end_date - obj.start_date).split(" ")[0]) > 1: 
+                    if int(str(obj.end_date - curr_date).split(" ")[0]) > 1: 
                         return ("name", "type", "itemDesc", "topay", "standard", "price", "start_date", "end_date", "open_to_sell") 
                     else: 
                         obj.open_to_sell = False 
-                        return () 
+                        obj.start_date = None
+                        return ("open_to_sell",) 
                 else:
                     return () 
         except:
@@ -111,7 +125,9 @@ class StoreItemAdmin(admin.ModelAdmin):
     ## Function to disable the default django buttons based on user type
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
         if object_id:
-            if request.user.is_staff and not request.user.is_superuser:
+            curr_date = datetime.now().date()
+            itemObj = StoreItem.objects.get(id=object_id)
+            if request.user.is_staff and not request.user.is_superuser and (int(str(itemObj.end_date - curr_date).split(" ")[0]) > 1):
                 extra_context = extra_context or {}
                 extra_context['show_save'] = False
                 extra_context['show_save_and_continue'] = False
@@ -146,12 +162,12 @@ class StoreItemAdmin(admin.ModelAdmin):
             form.base_fields['store'].widget.can_change_related = False
         return form 
 
-        
 
 ## Register ReviewItem 
 @admin.register(ReviewItem) 
 class ReviewItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "user", "item"]
+    list_display = ["id", "user", "item", "rating"]
+    list_per_page = 5
 
     ## Function to filter out logIn user store items review
     def get_queryset(self, request):
@@ -161,6 +177,12 @@ class ReviewItemAdmin(admin.ModelAdmin):
             return ReviewItem.objects.filter(item__in=store_item) 
         else:      
             return super().get_queryset(request)
+        
+    def get_list_filter(self, request):
+        if request.user.is_superuser:
+            return ["user", "item"]
+        else:
+            return ["item", "rating"]
 
 
 ## Register ItemImage
@@ -168,7 +190,7 @@ class ReviewItemAdmin(admin.ModelAdmin):
 class ItemImageAdmin(admin.ModelAdmin): 
     list_display = ["id", "item", "img"] 
     readonly_fields = ["img"] 
-
+    list_filter = ["item"]
     readonly_fields = ["img_image"] 
 
     def img_image(self, obj): 
