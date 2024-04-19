@@ -79,6 +79,8 @@ class StoreItemAdmin(admin.ModelAdmin):
         if not obj.start_date:
             obj.start_date = datetime.now().date()
             obj.end_date = obj.start_date + timedelta(days=2)
+            obj.open_to_sell = True
+            
 
         # Calculate topay amount and insert in into topay field
         if obj.price is not None:
