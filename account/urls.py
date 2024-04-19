@@ -12,5 +12,5 @@ router.register("address", views.Address, basename="address")
 urlpatterns = [
     path("", include(router.urls)),
     path("login/", views.Loginview.as_view(), name="login"), 
-]   
-    
+] 
+ 

@@ -33,7 +33,8 @@ AUTH_USER_MODEL = "account.User"
 
 # Application definition
 INSTALLED_APPS = [
-    "jazzmin",
+    "jazzmin", ## Django admin theme
+    
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -50,10 +51,10 @@ INSTALLED_APPS = [
     "cart",
     "order",
 
-    'django_cleanup.apps.CleanupConfig',
-]
+    "django_cleanup.apps.CleanupConfig",
+] 
 
-MIDDLEWARE = [
+MIDDLEWARE = [ 
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -64,7 +65,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000"]
+CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000"] 
 
 
 ROOT_URLCONF = "api.urls"
