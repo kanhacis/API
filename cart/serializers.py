@@ -26,9 +26,14 @@ class CartItemSerialize(serializers.ModelSerializer):
 class CartSerialize(serializers.ModelSerializer):
     # cartItem = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="mycartitem-detail") # used for url of mycartitem
     cart = CartItemSerialize(many=True, read_only=True) # Use the nested serializer
-    # store_name = serializers.CharField(source="store.name")
+    store_name = serializers.CharField(source="store.name")
+    subtotal = serializers.SerializerMethodField(read_only=True)
     
     class Meta: 
         model = Cart 
-        # fields = ["id", "user", "cart", "store_name"] 
-        fields = ["id", "user", "store", "cart"] 
+        fields = ["id", "user", "store", "store_name", "cart", "subtotal"] 
+
+    def get_subtotal(self, obj):
+        subtotal = sum(item.quantity * item.item.price for item in obj.cart.all()) 
+        return subtotal
+    

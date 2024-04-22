@@ -24,6 +24,7 @@ class StoreItemSerialize(serializers.ModelSerializer):
     item_images = ItemImageSerialize(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
     user_count = serializers.SerializerMethodField()
+    # store_name = serializers.SerializerMethodField(source="store.name", read_only=True)
     item_review = ReviewItemSerialize(many=True, read_only=True)
     
     class Meta:

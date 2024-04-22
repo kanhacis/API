@@ -78,10 +78,10 @@ class StoreItemAdmin(admin.ModelAdmin):
         # Insert current date in start_date and calculate the end_date 30 days ahead of start_date 
         if not obj.start_date:
             obj.start_date = datetime.now().date()
-            obj.end_date = obj.start_date + timedelta(days=4) 
+            obj.end_date = obj.start_date + timedelta(days=30) 
             obj.open_to_sell = True 
             
-            
+
         # Calculate topay amount and insert in into topay field
         if obj.price is not None:
             obj.topay = int(obj.price * 0.05) 
@@ -109,7 +109,7 @@ class StoreItemAdmin(admin.ModelAdmin):
     
     ## Function to freeze the field based on user type
     def get_readonly_fields(self, request, obj=None):
-        curr_date = datetime.now().date()
+        curr_date = datetime.now().date() 
         try:  
             if StoreItem.objects.filter(id=obj.pk).exists(): 
                 if request.user.is_staff and not request.user.is_superuser: 
