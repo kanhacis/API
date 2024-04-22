@@ -78,10 +78,10 @@ class StoreItemAdmin(admin.ModelAdmin):
         # Insert current date in start_date and calculate the end_date 30 days ahead of start_date 
         if not obj.start_date:
             obj.start_date = datetime.now().date()
-            obj.end_date = obj.start_date + timedelta(days=2)
-            obj.open_to_sell = True
+            obj.end_date = obj.start_date + timedelta(days=4) 
+            obj.open_to_sell = True 
             
-
+            
         # Calculate topay amount and insert in into topay field
         if obj.price is not None:
             obj.topay = int(obj.price * 0.05) 
@@ -98,12 +98,12 @@ class StoreItemAdmin(admin.ModelAdmin):
             else:
                 # Add a message and redirect to the change form
                 messages.add_message(request, messages.ERROR, "Recharge your store!")
-                return 
-        else:
-            # Add a message and redirect to the change form
-            messages.add_message(request, "Topay amount is negative. Item will not be saved.")
+                return  
+        else: 
+            # Add a message and redirect to the change form  
+            messages.add_message(request, "Topay amount is negative. Item will not be saved.") 
             return 
-
+                
         # call to the parent class save_model method
         super().save_model(request, obj, form, change)
     
