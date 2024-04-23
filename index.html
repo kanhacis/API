@@ -1,37 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .main {
+            width: 70%;
+            margin-top: 3%;
+            padding: 1%;
+            border: 1px solid black;
+            display: flex;
+            justify-content: space-between;
+        } 
+
+        .billing-info{ 
+            width: 61%;
+            border: 1px solid black;
+        } 
+
+        .order-info{
+            width: 37%;
+            border: 1px solid black;
+        } 
+
+        .order-info .heading {
+            font-size: 2rem; 
+        } 
+
+        .order-info 
+    </style>
 </head>
-
 <body>
-    <p>
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit necessitatibus pariatur doloribus aperiam vero, eveniet
-        rerum, sequi unde officia accusamus dicta? Culpa <span style="cursor: pointer; color: gray;"
-            class="show">more...</span><span class="data">Facilis cumque quia corporis
-            ipsum
-            laudantium
-            necessitatibus pariatur doloribus aperiam vero, eveniet rerum, sequi unde officia accusamus dicta? Culpa,
-            facere
-            amet. Molestiae quasi dolorum laudantium nihil inventore voluptatem cupiditate iste eum magni, illum ab,
-            odit
-            illo laboriosam aliquam quos numquam hic magnam! <span style="color: gray; cursor: pointer;" class="hide">...less</span></span>
-    </p>
+    <section>
+        <div class="main">
+            <div class="billing-info">
+
+            </div>
+            <div class="order-info">
+                <div class="heading">
+                    My Orders
+                </div>
+
+                <div class="data">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Products</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
-<script>
-    document.getElementsByClassName("data")[0].style.display = "none"
-
-    document.getElementsByClassName("show")[0].addEventListener("click", function () {
-        document.getElementsByClassName("data")[0].style.display = "inline";
-        document.getElementsByClassName("show")[0].style.display = "none";
-    })
-
-    document.getElementsByClassName("hide")[0].addEventListener("click", function () {
-        document.getElementsByClassName("data")[0].style.display = "none";
-        document.getElementsByClassName("show")[0].style.display = "inline";
-    })
-</script>
 </html>

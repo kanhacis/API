@@ -5,11 +5,11 @@ from django.db.models import Avg
 
 ## Serialize ReviewItem
 class ReviewItemSerialize(serializers.ModelSerializer):
-    username = serializers.CharField(source="user.username", read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True, default="booKStore User")
     
     class Meta:
         model = ReviewItem
-        fields = ["id", "username", "item", "rating", "description"]
+        fields = ["id", "user", "username", "item", "rating", "description"]
 
 
 ## Serialize ItemImage

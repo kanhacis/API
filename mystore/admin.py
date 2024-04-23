@@ -74,11 +74,11 @@ class StoreItemAdmin(admin.ModelAdmin):
             return ["name", "type", "standard", "end_date"]
 
     ## Write logic to deduct the store recharge while creating items
-    def save_model(self, request, obj, form, change):
+    def save_model(self, request, obj, form, change): 
         # Insert current date in start_date and calculate the end_date 30 days ahead of start_date 
         if not obj.start_date:
-            obj.start_date = datetime.now().date()
-            obj.end_date = obj.start_date + timedelta(days=30) 
+            obj.start_date = datetime.now().date() 
+            obj.end_date = obj.start_date + timedelta(days=2) 
             obj.open_to_sell = True 
             
 
@@ -94,21 +94,21 @@ class StoreItemAdmin(admin.ModelAdmin):
             if my_store.recharge - obj.topay >= 0: 
                 my_store.recharge -= obj.topay 
                 my_store.save() 
-                messages.add_message(request, messages.SUCCESS, "Item added successfully!")
-            else:
-                # Add a message and redirect to the change form
-                messages.add_message(request, messages.ERROR, "Recharge your store!")
+                messages.add_message(request, messages.SUCCESS, "Item added successfully!") 
+            else: 
+                # Add a message and redirect to the change form 
+                messages.add_message(request, messages.ERROR, "Recharge your store!") 
                 return  
         else: 
-            # Add a message and redirect to the change form  
+            # Add a message and redirect to the change form 
             messages.add_message(request, "Topay amount is negative. Item will not be saved.") 
             return 
                 
         # call to the parent class save_model method
         super().save_model(request, obj, form, change)
     
-    ## Function to freeze the field based on user type
-    def get_readonly_fields(self, request, obj=None):
+    ## Function to freeze the field based on user type 
+    def get_readonly_fields(self, request, obj=None): 
         curr_date = datetime.now().date() 
         try:  
             if StoreItem.objects.filter(id=obj.pk).exists(): 
@@ -117,9 +117,9 @@ class StoreItemAdmin(admin.ModelAdmin):
                         return ("name", "type", "itemDesc", "topay", "standard", "price", "start_date", "end_date", "open_to_sell") 
                     else: 
                         obj.open_to_sell = False 
-                        obj.start_date = None
+                        obj.start_date = None 
                         return ("open_to_sell",) 
-                else:
+                else: 
                     return () 
         except:
             return () 
