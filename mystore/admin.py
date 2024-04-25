@@ -1,6 +1,4 @@
-from collections.abc import Sequence
 from django.contrib import admin
-from django.http import HttpRequest
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
 from django.utils.safestring import mark_safe
 from .models import ItemImage
@@ -18,7 +16,7 @@ class MystoreAdmin(admin.ModelAdmin):
     class Media:
         js = [
             "refresh_admin.js"
-        ]
+        ] 
 
     ## Function to display url image 
     def url_image(self, obj): 
@@ -69,9 +67,9 @@ class StoreItemAdmin(admin.ModelAdmin):
     
     def get_list_filter(self, request):
         if request.user.is_superuser:
-            return ["store", "name", "type", "standard", "end_date"]
+            return ["store", "name", "type", "standard"]
         else:
-            return ["name", "type", "standard", "end_date"]
+            return ["name", "type", "standard"]
 
     ## Write logic to deduct the store recharge while creating items
     def save_model(self, request, obj, form, change): 
@@ -81,7 +79,6 @@ class StoreItemAdmin(admin.ModelAdmin):
             obj.end_date = obj.start_date + timedelta(days=2) 
             obj.open_to_sell = True 
             
-
         # Calculate topay amount and insert in into topay field
         if obj.price is not None:
             obj.topay = int(obj.price * 0.05) 
@@ -121,17 +118,17 @@ class StoreItemAdmin(admin.ModelAdmin):
                         return ("open_to_sell",) 
                 else: 
                     return () 
-        except:
+        except: 
             return () 
 
     ## Function to disable the default django buttons based on user type
     def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
-        if object_id:
-            curr_date = datetime.now().date()
-            itemObj = StoreItem.objects.get(id=object_id)
+        if object_id: 
+            curr_date = datetime.now().date() 
+            itemObj = StoreItem.objects.get(id=object_id) 
             if request.user.is_staff and not request.user.is_superuser and (int(str(itemObj.end_date - curr_date).split(" ")[0]) > 1):
-                extra_context = extra_context or {}
-                extra_context['show_save'] = False
+                extra_context = extra_context or {} 
+                extra_context['show_save'] = False 
                 extra_context['show_save_and_continue'] = False
                 extra_context['show_save_and_add_another'] = False
                 return super().changeform_view(request, object_id, form_url, extra_context)
@@ -184,7 +181,7 @@ class ReviewItemAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return ["user", "item"]
         else:
-            return ["item", "rating"]
+            return []
 
 
 ## Register ItemImage
@@ -192,7 +189,7 @@ class ReviewItemAdmin(admin.ModelAdmin):
 class ItemImageAdmin(admin.ModelAdmin): 
     list_display = ["id", "item", "img"] 
     readonly_fields = ["img"] 
-    list_filter = ["item"]
+    search_fields = ["item__name"]
     readonly_fields = ["img_image"] 
 
     def img_image(self, obj): 

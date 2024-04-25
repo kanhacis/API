@@ -1,17 +1,22 @@
 from rest_framework import serializers
 from .models import Order, OrderItem
+from mystore.serializers import StoreItemSerialize
 
 
 ## Serialize OrderItem model
 class OrderItemSerialize(serializers.ModelSerializer): 
+    item = StoreItemSerialize()
+
     class Meta: 
         model = OrderItem 
-        fields = ["id", "order", "item", "quantity"] 
+        fields = ["id", "order", "quantity", "item"] 
 
         
 ## Serialize Order model
 class OrderSerialize(serializers.ModelSerializer):
     orderItem = OrderItemSerialize(many=True, read_only=True)
-    class Meta:
+    storeName = serializers.CharField(source="store.name") 
+
+    class Meta: 
         model = Order 
-        fields = ["id", "user", "store", "cart", "orderItem"]
+        fields = ["id", "user", "store", "cart", "date", "storeName", "orderItem"] 

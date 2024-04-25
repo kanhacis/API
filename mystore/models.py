@@ -10,7 +10,6 @@ class Mystore(models.Model):
     contact = models.CharField(max_length=15)
     city = models.CharField(max_length=255, blank=True, null=True)
     date = models.DateField(auto_now_add=True)
-    status = models.BooleanField(default=True, blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     verification = models.BooleanField(default=False, blank=True, null=True)
     image = models.ImageField(upload_to="storeImages/")
@@ -53,7 +52,7 @@ class ItemImage(models.Model):
     def __str__(self): 
         return f"Image for {self.item.name}" 
 
-
+        
 ## Review model 
 class ReviewItem(models.Model): 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True) 

@@ -9,8 +9,8 @@ class ReviewItemSerialize(serializers.ModelSerializer):
     
     class Meta:
         model = ReviewItem
-        fields = ["id", "user", "username", "item", "rating", "description"]
-
+        fields = ["id", "user", "username", "item", "rating", "description"] 
+    
 
 ## Serialize ItemImage
 class ItemImageSerialize(serializers.ModelSerializer):
@@ -28,16 +28,16 @@ class StoreItemSerialize(serializers.ModelSerializer):
     item_review = ReviewItemSerialize(many=True, read_only=True)
     
     class Meta:
-        model = StoreItem
+        model = StoreItem 
         fields = ["id", "store", "name", "type", "standard", "price", "itemDesc", "item_review", "item_images", "average_rating", "user_count"]
     
     def get_average_rating(self, obj): 
-        average_rating = ReviewItem.objects.filter(item=obj).aggregate(Avg('rating'))['rating__avg']
-        return round(average_rating) if average_rating is not None else 0
+        average_rating = ReviewItem.objects.filter(item=obj).aggregate(Avg('rating'))['rating__avg'] 
+        return round(average_rating, 1) if average_rating is not None else 0 
     
-    def get_user_count(self, obj):
-        count = ReviewItem.objects.filter(item=obj).count()
-        return count
+    def get_user_count(self, obj): 
+        count = ReviewItem.objects.filter(item=obj).count() 
+        return count 
     
 
 ## Serialize Mystore model
@@ -47,10 +47,11 @@ class MystoreSerialize(serializers.ModelSerializer):
     # storeItem = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name="storeitem-detail") # storeitem -> is a url of (Item view) (StoreItem model)
     
     average_rating = serializers.SerializerMethodField()  # Add this field to calculate average rating
+    review_count = serializers.SerializerMethodField()
     
     class Meta: 
         model = Mystore
-        fields = ["id", "user", "name", "contact", "city", "date", "status", "location", "verification", "image", "average_rating"]
+        fields = ["id", "user", "name", "contact", "city", "date", "status", "location", "verification", "image", "average_rating", "review_count"]
     
     def get_average_rating(self, obj):
         # Calculate average rating for all store items
@@ -62,8 +63,14 @@ class MystoreSerialize(serializers.ModelSerializer):
         
         # Calculate average rating for store if there are items and ratings 
         if total_items > 0: 
-            return round(total_ratings / total_items) 
+            return round(total_ratings / total_items, 1)
         else: 
             return 0 # Return 0 if there are no items or ratings 
+        
+    def get_review_count(self, obj):
+        user_count = 0
+        for store_item in obj.storeItem.all():
+            user_count += ReviewItem.objects.filter(item=store_item).count()
+        return user_count
         
  

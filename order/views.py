@@ -14,7 +14,7 @@ class Myorder(viewsets.ModelViewSet):
     queryset = Order.objects.all() 
     serializer_class = OrderSerialize 
 
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self): 
         user_id = self.request.query_params.get("user_id") 
