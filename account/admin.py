@@ -8,7 +8,6 @@ from .models import Contact, Addres, User
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     ## List of fields displayed in admin panel
-    list_display = ["id", "username", "email", "contact", "is_staff"]
     list_per_page = 5
 
     ## Function to get a logIn user object 
@@ -23,30 +22,36 @@ class UserAdmin(admin.ModelAdmin):
             return ["username"]
         else:
             return []
+        
+    def get_list_display(self, request):
+        if request.user.is_superuser:
+            return ["id", "username", "email", "contact", "is_staff"] 
+        else:
+            return ["username", "email", "contact", "is_staff"] 
 
 
 ## Register contact model
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
-    ## List of fields displayed in admin panel
-    list_display = ["email", "contact", "subject"]
-    list_filter = ["email"]
-    list_per_page = 5
+    ## List of fields displayed in admin panel 
+    list_display = ["email", "contact", "subject"] 
+    list_filter = ["email"] 
+    list_per_page = 5 
 
 
-## Register admin model
-@admin.register(Addres)
-class AddressAdmin(admin.ModelAdmin):
-    ## List of fields displayed in admin panel
-    list_display = ["user", "state", "city"]
-    list_per_page = 5
+## Register admin model   
+@admin.register(Addres) 
+class AddressAdmin(admin.ModelAdmin): 
+    ## List of fields displayed in admin panel 
+    list_display = ["user", "state", "city"] 
+    list_per_page = 5 
 
-    ## Function to get a logIn user address object
-    def get_queryset(self, request):
-        if request.user.is_staff and not request.user.is_superuser:
-            return Addres.objects.filter(user=request.user)
-        else:
-            return super().get_queryset(request)
+    ## Function to get a logIn user address object 
+    def get_queryset(self, request): 
+        if request.user.is_staff and not request.user.is_superuser: 
+            return Addres.objects.filter(user=request.user) 
+        else: 
+            return super().get_queryset(request) 
         
     def get_list_filter(self, request):
         if request.user.is_superuser:

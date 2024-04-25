@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 ## Register Mystore model 
 @admin.register(Mystore) 
 class MystoreAdmin(admin.ModelAdmin): 
-    list_display = ["id", "user", "name", "contact", "date", "recharge", "verification"] 
+    list_display = ["user", "name", "contact", "date", "recharge", "verification"] 
     readonly_fields = ["verification", "recharge", "url_image"] 
     exclude = ["url"]
 
@@ -57,7 +57,7 @@ class MystoreAdmin(admin.ModelAdmin):
 ## Register StoreItem
 @admin.register(StoreItem)
 class StoreItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "store", "name", "type", "price", "open_to_sell", "end_date"]
+    list_display = ["store", "name", "type", "price", "open_to_sell", "end_date"]
     readonly_fields = []
     list_per_page = 5
 
@@ -165,7 +165,7 @@ class StoreItemAdmin(admin.ModelAdmin):
 ## Register ReviewItem 
 @admin.register(ReviewItem) 
 class ReviewItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "user", "item", "rating"]
+    list_display = ["user", "item", "rating"]
     list_per_page = 5
 
     ## Function to filter out logIn user store items review
@@ -187,7 +187,7 @@ class ReviewItemAdmin(admin.ModelAdmin):
 ## Register ItemImage
 @admin.register(ItemImage) 
 class ItemImageAdmin(admin.ModelAdmin): 
-    list_display = ["id", "item", "img"] 
+    list_display = ["item", "img"] 
     readonly_fields = ["img"] 
     search_fields = ["item__name"]
     readonly_fields = ["img_image"] 

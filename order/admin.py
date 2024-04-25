@@ -7,7 +7,7 @@ from mystore.models import Mystore
 ## Register Order model
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ["id", "user", "store"]
+    list_display = ["user", "store"]
     list_per_page = 5
 
     def get_queryset(self, request):
@@ -27,7 +27,7 @@ class OrderAdmin(admin.ModelAdmin):
 ## Register OrderItem model
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ["id", "order", "item", "quantity"] 
+    list_display = ["order", "item", "quantity"] 
     list_per_page = 5
 
     def get_queryset(self, request): 

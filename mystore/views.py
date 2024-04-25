@@ -1,5 +1,5 @@
 from .models import Mystore, StoreItem, ReviewItem, ItemImage
-from .serializers import MystoreSerialize, StoreItemSerialize, ReviewItemSerialize, ItemImageSerialize
+from .serializers import MystoreSerialize, StoreItemSerialize, ReviewItemSerialize, ItemImageSerialize, ItemOnlySerialize
 from rest_framework import viewsets
 from account.models import Addres
 from django_filters import rest_framework as filters
@@ -44,7 +44,7 @@ class Images(viewsets.ModelViewSet):
 
 ## StoreRelatedItem api class
 class StoreRelatedItem(viewsets.ModelViewSet):
-    serializer_class = StoreItemSerialize
+    serializer_class = StoreItemSerialize 
 
     def get_queryset(self):
         store_id = self.request.query_params.get('store_id') # use this by adding url?store_id=3
@@ -62,3 +62,9 @@ class StoreRelatedItem(viewsets.ModelViewSet):
 class Review(viewsets.ModelViewSet): 
     queryset = ReviewItem.objects.all() 
     serializer_class = ReviewItemSerialize 
+
+
+## Item only api class
+class ItemOnly(viewsets.ModelViewSet):
+    queryset = StoreItem.objects.all()
+    serializer_class = ItemOnlySerialize
